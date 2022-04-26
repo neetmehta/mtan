@@ -7,8 +7,10 @@ import torch.utils.data.sampler as sampler
 from create_dataset import *
 from utils import *
 
-parser = argparse.ArgumentParser(description='Multi-task: Attention Network')
+parser = argparse.ArgumentParser(description='Multi-task: Cross')
 parser.add_argument('--weight', default='equal', type=str, help='multi-task weighting: equal, uncert, dwa')
+parser.add_argument('--ckpt_dir', default='/ckpt', type=str, help='checkpoint dir')
+parser.add_argument('--epochs', default=200, type=int, help='no. of epochs')
 parser.add_argument('--dataroot', default='nyuv2', type=str, help='dataset root')
 parser.add_argument('--temp', default=2.0, type=float, help='temperature for DWA (must be positive)')
 parser.add_argument('--apply_augmentation', action='store_true', help='toggle to apply data augmentation on NYUv2')

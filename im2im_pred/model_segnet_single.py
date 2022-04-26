@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser(description='Single-task: One Task')
 parser.add_argument('--task', default='semantic', type=str, help='choose task: semantic, depth, normal')
 parser.add_argument('--dataroot', default='nyuv2', type=str, help='dataset root')
 parser.add_argument('--apply_augmentation', action='store_true', help='toggle to apply data augmentation on NYUv2')
+parser.add_argument('--ckpt_dir', default='/ckpt', type=str, help='checkpoint dir')
+parser.add_argument('--epochs', default=200, type=int, help='no. of epochs')
 opt = parser.parse_args()
 
 class SegNet(nn.Module):

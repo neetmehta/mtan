@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 import numpy as np
+import os
 
 """
 Define task metrics, loss functions and model trainer here.
@@ -129,9 +130,9 @@ def multi_task_trainer(train_loader, test_loader, multi_task_model, device, opti
     train_batch = len(train_loader)
     test_batch = len(test_loader)
     T = opt.temp
-    avg_cost = np.zeros([total_epoch, 24], dtype=np.float32)
-    lambda_weight = np.ones([3, total_epoch])
-    for index in range(total_epoch):
+    avg_cost = np.zeros([opt.epochs, 24], dtype=np.float32)
+    lambda_weight = np.ones([3, opt.epochs])
+    for index in range(opt.epochs):
         cost = np.zeros(24, dtype=np.float32)
 
         # apply Dynamic Weight Average
@@ -219,7 +220,9 @@ def multi_task_trainer(train_loader, test_loader, multi_task_model, device, opti
                     avg_cost[index, 14], avg_cost[index, 15], avg_cost[index, 16], avg_cost[index, 17], avg_cost[index, 18],
                     avg_cost[index, 19], avg_cost[index, 20], avg_cost[index, 21], avg_cost[index, 22], avg_cost[index, 23]))
 
-
+        if index%5==0:
+            state_dict = {"model_state_dict":multi_task_model.state_dict(), "optimizer_state_dict": optimizer.state_dict(), "epoch": index, "loss": avg_cost}
+            torch.save(state_dict, os.path.join(opt.ckpt_dir, f"model_epoch_{index}.pth"))
 """
 =========== Universal Single-task Trainer =========== 
 """
@@ -228,8 +231,8 @@ def multi_task_trainer(train_loader, test_loader, multi_task_model, device, opti
 def single_task_trainer(train_loader, test_loader, single_task_model, device, optimizer, scheduler, opt, total_epoch=200):
     train_batch = len(train_loader)
     test_batch = len(test_loader)
-    avg_cost = np.zeros([total_epoch, 24], dtype=np.float32)
-    for index in range(total_epoch):
+    avg_cost = np.zeros([opt.epochs, 24], dtype=np.float32)
+    for index in range(opt.epochs):
         cost = np.zeros(24, dtype=np.float32)
 
         # iteration for all batches
@@ -314,3 +317,8 @@ def single_task_trainer(train_loader, test_loader, single_task_model, device, op
             print('Epoch: {:04d} | TRAIN: {:.4f} {:.4f} {:.4f} {:.4f} {:.4f} {:.4f} TEST: {:.4f} {:.4f} {:.4f} {:.4f} {:.4f} {:.4f}'
               .format(index, avg_cost[index, 6], avg_cost[index, 7], avg_cost[index, 8], avg_cost[index, 9], avg_cost[index, 10], avg_cost[index, 11],
                       avg_cost[index, 18], avg_cost[index, 19], avg_cost[index, 20], avg_cost[index, 21], avg_cost[index, 22], avg_cost[index, 23]))
+
+        
+        if index%5==0:
+            state_dict = {"model_state_dict":single_task_model.state_dict(), "optimizer_state_dict": optimizer.state_dict(), "epoch": index, "loss": avg_cost}
+            torch.save(state_dict, os.path.join(opt.ckpt_dir, f"model_epoch_{index}.pth"))
